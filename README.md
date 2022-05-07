@@ -11,7 +11,9 @@ and therefore no data is stored in this repository. The examples use rsdata3xx.R
 
 ## Instructions
 
-Load the SwedeHF data into your workspace, load("xx/rsdata3xx.RData"), and run the examples.  
+Load the SwedeHF data into your workspace, load("xx/rsdata3xx.RData"), and run the examples. 
+
+Always check if the code generated the required result! 
 
 ## Contact
 
