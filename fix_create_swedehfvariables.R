@@ -1,6 +1,9 @@
 
-
 # Examples create and fix swedehf variables needed for project -------------------
+
+install.packages("dplyr") # you only need to do this once
+
+library("dplyr")
 
 rsdata <- rsdata %>%
   mutate(
@@ -12,29 +15,32 @@ rsdata <- rsdata %>%
       shf_nyha %in% c("I", "II") ~ "I - II",
       shf_nyha %in% c("III", "IV") ~ "III-IV"
     ),
-    shf_age_cat = case_when(
-      shf_age < 75 ~ "<75",
-      shf_age >= 75 ~ ">=75"
+    # for specific order of levels use factor
+    shf_age_cat = factor(case_when(
+      is.na(shf_age) ~ NA_real_,
+      shf_age < 75 ~ 1,
+      shf_age >= 75 ~ 2
+    ),
+    levels = 1:2,
+    labels = c("<75", ">=75")
     ),
     shf_ef_cat = factor(case_when(
       shf_ef == ">=50" ~ 3,
       shf_ef == "40-49" ~ 2,
       shf_ef %in% c("30-39", "<30") ~ 1
     ),
-    labels = c("HFrEF", "HFmrEF", "HFpEF"),
-    levels = 1:3
+    levels = 1:3,
+    labels = c("HFrEF", "HFmrEF", "HFpEF")
     ),
     shf_smoking_cat = factor(case_when(
       shf_smoking %in% c("Former", "Never") ~ 0,
       shf_smoking %in% c("Current") ~ 1
     ),
-    labels = c("No", "Yes"),
-    levels = 0:1
+    levels = 0:1,
+    labels = c("No", "Yes")
     ),
-
-    # Anemia
     shf_anemia = case_when(
-      is.na(shf_hb) ~ NA_character_,
+      is.na(shf_hb) | is.na(shf_sex) ~ NA_character_,
       shf_sex == "Female" & shf_hb < 120 | shf_sex == "Male" & shf_hb < 130 ~ "Yes",
       TRUE ~ "No"
     ),
@@ -49,8 +55,8 @@ rsdata <- rsdata %>%
         shf_potassium <= 5 ~ 1,
         shf_potassium > 5 ~ 3
       ),
-      labels = c("normakalemia", "hypokalemia", "hyperkalemia"),
-      levels = 1:3
+      levels = 1:3,
+      labels = c("normakalemia", "hypokalemia", "hyperkalemia")
     ),
     shf_heartrate_cat = case_when(
       shf_heartrate <= 70 ~ "<=70",
@@ -61,16 +67,16 @@ rsdata <- rsdata %>%
       shf_device %in% c("CRT", "CRT & ICD", "ICD") ~ 2,
       TRUE ~ 1
     ),
+    levels = 1:2,
     labels = c("No", "CRT/ICD"),
-    levels = 1:2
     ),
     shf_bmi_cat = factor(case_when(
       is.na(shf_bmi) ~ NA_real_,
       shf_bmi < 30 ~ 1,
       shf_bmi >= 30 ~ 2
     ),
-    labels = c("<30", ">=30"),
-    levels = 1:2
+    levels = 1:2,
+    labels = c("<30", ">=30")
     ),
 
     shf_gfrckdepi_cat = factor(case_when(
@@ -78,8 +84,8 @@ rsdata <- rsdata %>%
       shf_gfrckdepi >= 60 ~ 1,
       shf_gfrckdepi < 60 ~ 2,
     ),
-    labels = c(">=60", "<60"),
-    levels = 1:2
+    levels = 1:2,
+    labels = c(">=60", "<60")
     ),
     shf_sos_com_af = case_when(
       sos_com_af == "Yes" |
@@ -141,7 +147,7 @@ rsdata <- left_join(
   ) %>%
   select(-incmed)
 
-# project specific categorization of NT-proBNP within year
+# project specific categorization of NT-proBNP within EF
 
 ntprobnp <- rsdata %>%
   group_by(shf_ef_cat) %>%

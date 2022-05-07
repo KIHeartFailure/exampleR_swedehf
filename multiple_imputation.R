@@ -10,7 +10,7 @@ library("mice")
 library("survival")
 library("dplyr")
 
-# Nelson-Aalen estimator for inclusion in the imputation model
+# Nelson-Aalen estimator used in imputation model
 na <- basehaz(coxph(Surv(sos_outtime_death, sos_out_death == "Yes") ~ 1,
   data = rsdata, method = "breslow"
 ))
@@ -18,7 +18,7 @@ rsdata <- left_join(rsdata, na, by = c("sos_outtime_death" = "time"))
 
 # Alt 1. Only imputation variables in dataset -----------------------------
 
-## Keep only variables used in the imputation model in the dataset used in the imputation model
+# Keep only variables used in the imputation model in the dataset used in the imputation model
 
 rsdatausedforimp <-
   rsdata %>%
@@ -83,7 +83,7 @@ rsdataimp <- mice(rsdatausedforimp,
 
 # Alt 2. Use prediction matrix and method ---------------------------------
 
-## Specify in the prediction matrix and method input parameters which variables should be used in the imputation model
+# Specify in the prediction matrix and method input parameters which variables should be used in the imputation model
 
 modvars <- c(
   # demo
@@ -163,6 +163,6 @@ rsdataimp <- mice(rsdata,
 )
 
 
-# More:  ------------------------------------------------------------------
+# More  ------------------------------------------------------------------
 
 # for parallel computing (to speed up the process) see https://github.com/KIHeartFailure/resistantht/blob/main/munge/06-impute.R

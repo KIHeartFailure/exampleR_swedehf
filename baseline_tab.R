@@ -7,7 +7,6 @@ install.packages("openxlsx") # you only need to do this once
 library("tableone")
 library("openxlsx")
 
-
 tabvars <- c(
   # demo
   "shf_sex",
@@ -69,10 +68,10 @@ tab1 <- print(CreateTableOne(
   data = rsdata,
   strata = "shf_sex"
 ),
-smd = TRUE, # if you want stand mean differences, for example when using propensity score matching
-missing = TRUE,
+smd = TRUE, # stand mean differences, for example when using propensity score matching
+missing = TRUE, # always present missing 
 printToggle = FALSE,
-nonnormal = tabvars,
+nonnormal = tabvars, # for median (qi-q3) instead of default mean (SD)
 catDigits = 1,
 contDigits = 1,
 noSpaces = TRUE,
@@ -80,10 +79,12 @@ explain = FALSE
 )
 
 tab1 <- as_tibble(cbind(Variable = rownames(tab1), tab1)) %>%
-  select(Variable, Missing, 2:3, p, SMD)
+  select(Variable, Missing, 2:3, p, SMD) # to get stuff in order
 
 # export to excel
 write.xlsx(tab1, paste0("./output/tabs/tab1_", Sys.Date(), ".xlsx"), rowNames = FALSE, overwrite = TRUE)
 
 
-# for adding variable names and units to the table, see https://github.com/KIHeartFailure/iron/blob/main/src/tab1_aid.Rmd
+# More --------------------------------------------------------------------
+
+# To add variable names and units to the table, see ex https://github.com/KIHeartFailure/iron/blob/main/src/tab1_aid.Rmd

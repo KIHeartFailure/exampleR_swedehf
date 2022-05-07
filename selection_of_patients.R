@@ -16,6 +16,6 @@ rsdata <- rsdata326 %>%
     !is.na(shf_ef)) %>%
   group_by(LopNr) %>%
   arrange(shf_indexdtm) %>%
-  slice(n()) %>% # select the last registration for each individual (LopNr)
+  slice(n()) %>% # select the last registration within each individual (LopNr)
   # slice(1) %>% selects the first registration instead
   ungroup()

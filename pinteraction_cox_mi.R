@@ -1,5 +1,5 @@
 
-# P-value interaction > 2 levels in cox model using imputed data --------
+# P-value for interaction in cox model using mi data --------------------
 
 install.packages("mice") # you only need to do this once
 install.packages("survival") # you only need to do this once
