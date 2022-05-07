@@ -3,9 +3,7 @@ install.packages("dplyr") # you only need to do this once
 
 library("dplyr")
 
-# Impute heigh based on age and sex and create BMI ------------------------
-
-# impute height with the median within each age and sex
+# Impute height based on age and sex and create BMI ------------------------
 
 # few pats < 30 and > 90 categorize to one group
 rsdata <- rsdata %>%
@@ -30,7 +28,7 @@ rsdata <- left_join(
   by = c("shf_sex", "shf_age_catimp")
 ) %>%
   mutate(
-    shf_heightimp = coalesce(shf_height, heightmed), # if non missing height use that, otherwise use the imputed median
-    shf_bmiimp = round(shf_weight / (shf_heightimp / 100)^2, 1) # calc bmi from imputed height
+    shf_heightimp = coalesce(shf_height, heightmed), # if non missing height use that, otherwise use the imputed median within age and sex
+    shf_bmiimp = round(shf_weight / (shf_heightimp / 100)^2, 1) # calculate bmi from imputed height
   ) %>%
   select(-shf_heightimp, -shf_age_catimp, -heightmed) # remove variables not needed
