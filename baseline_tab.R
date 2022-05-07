@@ -3,9 +3,11 @@
 
 install.packages("tableone") # you only need to do this once
 install.packages("openxlsx") # you only need to do this once
+install.packages("dplyr") # you only need to do this once
 
 library("tableone")
 library("openxlsx")
+library("dplyr")
 
 tabvars <- c(
   # demo
