@@ -16,12 +16,14 @@ na <- basehaz(coxph(Surv(sos_outtime_death, sos_out_death == "Yes") ~ 1,
 ))
 rsdata <- left_join(rsdata, na, by = c("sos_outtime_death" = "time"))
 
+# OBS! All categorical variables used in imputation model must be of class factor and NOT character
+str(rsdata)
+
 # Alt 1. Only imputation variables in dataset -----------------------------
 
 # Keep only variables used in the imputation model in the dataset used in the imputation model
 
-rsdatausedforimp <-
-  rsdata %>%
+rsdatausedforimp <- rsdata %>%
   select(
     shf_sex,
     shf_age,
@@ -161,7 +163,6 @@ rsdataimp <- mice(rsdata,
   printFlag = FALSE,
   seed = 349872354
 )
-
 
 # More  ------------------------------------------------------------------
 

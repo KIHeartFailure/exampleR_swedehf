@@ -175,3 +175,7 @@ rsdata <- left_join(
     )
   ) %>%
   select(-ntmed)
+
+# To make all character variables factors
+rsdata <- rsdata %>%
+  mutate(across(where(is_character), factor))
