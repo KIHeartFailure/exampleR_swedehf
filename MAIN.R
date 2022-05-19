@@ -13,7 +13,14 @@ load("./data/rsdataxxx.RData")
 
 source("./code/patientselection.R")
 source("./code/varfixes.R")
-source("./code/mymodels.R")
+source("./code/multipleimputation.R")
+
+save(file = "./data/imprsdata.RData", list = c("imprsdata.RData"))
+load("imprsdata.RData")
+
+source("./code/baselinetab.R")
+source("./code/barplot.R")
+source("./code/mycoxmodels.R")
 source("./code/foresplot.R")
 
 
