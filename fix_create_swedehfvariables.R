@@ -1,5 +1,6 @@
 
 # Examples create and fix swedehf variables needed for project -------------------
+# Many of the categorizations and combinations below are already prepared in SHFDB4
 
 install.packages("dplyr") # you only need to do this once
 
@@ -16,28 +17,31 @@ rsdata <- rsdata %>%
       shf_nyha %in% c("III", "IV") ~ "III-IV"
     ),
     # for specific order of levels use factor
-    shf_age_cat = factor(case_when(
-      is.na(shf_age) ~ NA_real_,
-      shf_age < 75 ~ 1,
-      shf_age >= 75 ~ 2
+    shf_age_cat = factor(
+      case_when(
+        is.na(shf_age) ~ NA_real_,
+        shf_age < 75 ~ 1,
+        shf_age >= 75 ~ 2
+      ),
+      levels = 1:2,
+      labels = c("<75", ">=75")
     ),
-    levels = 1:2,
-    labels = c("<75", ">=75")
+    shf_ef_cat = factor(
+      case_when(
+        shf_ef == ">=50" ~ 3,
+        shf_ef == "40-49" ~ 2,
+        shf_ef %in% c("30-39", "<30") ~ 1
+      ),
+      levels = 1:3,
+      labels = c("HFrEF", "HFmrEF", "HFpEF")
     ),
-    shf_ef_cat = factor(case_when(
-      shf_ef == ">=50" ~ 3,
-      shf_ef == "40-49" ~ 2,
-      shf_ef %in% c("30-39", "<30") ~ 1
-    ),
-    levels = 1:3,
-    labels = c("HFrEF", "HFmrEF", "HFpEF")
-    ),
-    shf_smoking_cat = factor(case_when(
-      shf_smoking %in% c("Former", "Never") ~ 0,
-      shf_smoking %in% c("Current") ~ 1
-    ),
-    levels = 0:1,
-    labels = c("No", "Yes")
+    shf_smoking_cat = factor(
+      case_when(
+        shf_smoking %in% c("Former", "Never") ~ 0,
+        shf_smoking %in% c("Current") ~ 1
+      ),
+      levels = 0:1,
+      labels = c("No", "Yes")
     ),
     shf_anemia = case_when(
       is.na(shf_hb) | is.na(shf_sex) ~ NA_character_,
@@ -62,30 +66,32 @@ rsdata <- rsdata %>%
       shf_heartrate <= 70 ~ "<=70",
       shf_heartrate > 70 ~ ">70"
     ),
-    shf_device_cat = factor(case_when(
-      is.na(shf_device) ~ NA_real_,
-      shf_device %in% c("CRT", "CRT & ICD", "ICD") ~ 2,
-      TRUE ~ 1
+    shf_device_cat = factor(
+      case_when(
+        is.na(shf_device) ~ NA_real_,
+        shf_device %in% c("CRT", "CRT & ICD", "ICD") ~ 2,
+        TRUE ~ 1
+      ),
+      levels = 1:2,
+      labels = c("No", "CRT/ICD"),
     ),
-    levels = 1:2,
-    labels = c("No", "CRT/ICD"),
+    shf_bmi_cat = factor(
+      case_when(
+        is.na(shf_bmi) ~ NA_real_,
+        shf_bmi < 30 ~ 1,
+        shf_bmi >= 30 ~ 2
+      ),
+      levels = 1:2,
+      labels = c("<30", ">=30")
     ),
-    shf_bmi_cat = factor(case_when(
-      is.na(shf_bmi) ~ NA_real_,
-      shf_bmi < 30 ~ 1,
-      shf_bmi >= 30 ~ 2
-    ),
-    levels = 1:2,
-    labels = c("<30", ">=30")
-    ),
-
-    shf_gfrckdepi_cat = factor(case_when(
-      is.na(shf_gfrckdepi) ~ NA_real_,
-      shf_gfrckdepi >= 60 ~ 1,
-      shf_gfrckdepi < 60 ~ 2,
-    ),
-    levels = 1:2,
-    labels = c(">=60", "<60")
+    shf_gfrckdepi_cat = factor(
+      case_when(
+        is.na(shf_gfrckdepi) ~ NA_real_,
+        shf_gfrckdepi >= 60 ~ 1,
+        shf_gfrckdepi < 60 ~ 2,
+      ),
+      levels = 1:2,
+      labels = c(">=60", "<60")
     ),
     shf_sos_com_af = case_when(
       sos_com_af == "Yes" |
@@ -123,29 +129,34 @@ rsdata <- rsdata %>%
 
 # project specific categorization of income within year
 
+# find the tertiles
 inc <- rsdata %>%
   group_by(shf_indexyear) %>%
-  summarise(incmed = quantile(scb_dispincome,
-    probs = 0.5,
+  summarise(incsum = list(enframe(quantile(scb_dispincome,
+    probs = c(0.33, 0.66),
     na.rm = TRUE
-  ), .groups = "drop_last")
+  )))) %>%
+  unnest(cols = c(incsum)) %>%
+  spread(name, value)
 
+# merge with swedehf data by indexyear
 rsdata <- left_join(
   rsdata,
   inc,
   by = "shf_indexyear"
 ) %>%
   mutate(
-    scb_dispincome_cat2 = case_when(
-      scb_dispincome < incmed ~ 1,
-      scb_dispincome >= incmed ~ 2
-    ),
-    scb_dispincome_cat2 = factor(scb_dispincome_cat2,
-      levels = 1:2,
-      labels = c("Below median", "Above median")
+    scb_dispincome_cat = factor(
+      case_when(
+        scb_dispincome < `33%` ~ 1,
+        scb_dispincome < `66%` ~ 2,
+        scb_dispincome >= `66%` ~ 3
+      ),
+      levels = 1:3,
+      labels = c("Lowest tertile", "Middle tertile", "Highest tertile")
     )
   ) %>%
-  select(-incmed)
+  select(-`33%`, -`66%`)
 
 # project specific categorization of NT-proBNP within EF
 

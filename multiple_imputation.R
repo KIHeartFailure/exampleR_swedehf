@@ -41,7 +41,7 @@ rsdatausedforimp <- rsdata %>%
     shf_ntprobnp,
 
     # comorbs
-    shf_smoking,
+    shf_smoke,
     shf_diabetes,
     shf_af,
     shf_hypertension,
@@ -105,7 +105,7 @@ modvars <- c(
   "shf_ntprobnp",
 
   # comorbs
-  "shf_smoking",
+  "shf_smoke",
   "shf_diabetes",
   "shf_af",
   "shf_hypertension",

@@ -1,5 +1,5 @@
 
-# Apply inclusion/exclusion criteria to shfdb3 to get the project specific cohort
+# Apply inclusion/exclusion criteria to shfdb4 to get the project specific cohort
 
 install.packages("dplyr") # you only need to do this once
 install.packages("lubridate") # you only need to do this once
@@ -10,7 +10,8 @@ library("lubridate")
 
 rsdata <- rsdata400 %>%
   # comorbs, hf duration ect is not collected for the follow-up visits in New SwedeHF.
-  # They are imputed from the index visit in the database but will not be of as good quality. Also, although not very common,
+  # They are imputed from the index visit in the database but will not be of as good quality.
+  # Also, although not very common,
   # a follow-up visit can be for example a phone call, leading to more missing for other variables.
   # For those reasons follow-up visits in New SwedeHF are excluded.
   filter(!(shf_source == "New SHF" & shf_type == "Follow-up") &

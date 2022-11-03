@@ -4,6 +4,7 @@ install.packages("dplyr") # you only need to do this once
 library("dplyr")
 
 # Impute height based on age and sex and create BMI ------------------------
+# The below is already done in shf_bmiimp and shf_bmiimp_cat
 
 # create age groups, more stable median than exact age
 rsdata <- rsdata %>%
