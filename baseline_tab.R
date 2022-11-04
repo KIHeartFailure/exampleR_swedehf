@@ -74,7 +74,7 @@ tab1 <- print(
   CreateTableOne(
     vars = tabvars,
     data = rsdata,
-    strata = "shf_sex"
+    strata = "shf_ef_cat"
   ),
   smd = TRUE, # stand mean differences, for example when using propensity score matching
   missing = TRUE, # always present missing
